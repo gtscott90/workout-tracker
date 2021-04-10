@@ -1,9 +1,9 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const { db } = require("../models/workout");
+// const { db } = require("../models/workout");
 const router = express.Router();
-const Workout = mongoose.model("workout");
-const app = express();
+const Workout = mongoose.model("Workout");
+// const app = express();
 
 router.get("/api/workouts", (req, res) => {
     Workout.aggregate({
