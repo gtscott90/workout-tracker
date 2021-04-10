@@ -5,6 +5,13 @@ const router = express.Router();
 const Workout = mongoose.model("Workout");
 // const app = express();
 
+//Defining an async utility to handle errors
+function catchAsync(fn) {
+    return function (req, res, next) {
+      fn(req, res, next).catch((e) => next(e));
+    };
+  }
+  
 router.get("/api/workouts", (req, res) => {
     Workout.aggregate({
         $addFields: {
@@ -45,4 +52,44 @@ router.put("/api/workouts/:id", (req, res) => {
     });
 });
 
+// workout dashboard
+router.get(
+    "/api/workouts",
+    catchAsync(async (req, res, next) => {
+      const workouts = await Workout.aggregate([
+        {
+          $addFields: {
+            totalDuration: {
+              $sum: "$exercises.duration",
+            },
+          },
+        },
+        {
+          $sort: {
+            day: 1,
+          },
+        },
+      ]).exec();
+      res.json(workouts);
+    })
+  );
+  
+  router.get(
+    "/api/workouts/range",
+    catchAsync(async (req, res, next) => {
+      const workouts = await Workout.aggregate([
+        {
+          $addFields: {
+            totalDuration: {
+              $sum: "$exercises.duration",
+            },
+          },
+        },
+        { $sort: { day: -1 } },
+        { $limit: 7 },
+        { $sort: { day: 1 } },
+      ]).exec();
+      res.json(workouts);
+    })
+  );
 module.exports = router;
