@@ -15,8 +15,14 @@ app.use(express.static("public"));
 app.use(apiRoutes);
 app.use(htmlRoutes);
 
-// TODO: write connection to mongoose here
-
+mongoose.connect(
+    process.env.MONGODB_URI || 'mongodb://localhost:27017/devsync',
+    {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      useCreateIndex: true,
+    }
+  );
 
 app.listen(PORT, () => {
   console.log(`App running on port ${PORT}!`);
