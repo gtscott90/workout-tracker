@@ -72,7 +72,7 @@ router.put("/api/workouts/:id", (req, res) => {
   router.get(
     "/api/workouts/range",
     (req, res) => {
-      const workouts = Workout.aggregate([
+      Workout.aggregate([
         {
           $addFields: {
             totalDuration: {
@@ -82,9 +82,7 @@ router.put("/api/workouts/:id", (req, res) => {
         },
         { $sort: { day: -1 } },
         { $limit: 7 },
-        { $sort: { day: 1 } },
-      ]).exec();
-      res.json(workouts);
+      ]).then(workouts => res.json(workouts));
     }
   );
 module.exports = router;
